@@ -15,6 +15,7 @@
   },
   "homepage": "https://github.com/kevin-roark/one-tool",
   "dependencies": {
-    "dragula": "^3.0.3"
+    "dragula": "^3.0.3",
+    "normalize.css": "^3.0.3"
   }
 }
