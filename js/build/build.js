@@ -1,24 +1,100 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 
 (function() {
-  var dragula = require('dragula');
-  var kt = require('kutility');
   var $ = require('jquery');
+  var doTitleScreen = require('./title-screen');
 
-  doTitleScreen(function() {
-    console.log('unlocked the key!!');
+  var SKIP_TITLE = true;
+
+  if (!SKIP_TITLE) {
+    doTitleScreen(function() {
+      console.log('unlocked the key!!');
+      startRaking();
+    });
+  }
+  else {
+    startRaking();
+  }
+
+  function startRaking() {
+    $('#title-screen').fadeOut(2000);
+
+    var $rake = $('#rake');
+    $(document).mousemove(function(ev) {
+      $rake.css('left', ev.pageX + 'px');
+      $rake.css('top', ev.pageY + 'px');
+    });
+  }
+
+})();
+
+},{"./title-screen":2,"jquery":12}],2:[function(require,module,exports){
+
+var dragula = require('dragula');
+var kt = require('kutility');
+var $ = require('jquery');
+
+module.exports = function (callback) {
+  var $titleWordContainer = $('#title-screen-starter-bucket');
+
+  var titleWords = kt.shuffle('and rakes to spread the haul'.split(' '));
+  for (var i = 0; i < titleWords.length; i++) {
+    var word = titleWords[i];
+    var $wordDiv = $('<div class="title-screen-word">' + word + '</div>');
+    $titleWordContainer.append($wordDiv);
+  }
+
+  var bucketIDs = [
+    '#title-screen-bucket-1',
+    '#title-screen-bucket-2',
+    '#title-screen-bucket-3',
+    '#title-screen-bucket-4',
+    '#title-screen-bucket-5',
+    '#title-screen-bucket-6'
+  ];
+
+  var dragContainers = [
+    document.querySelector('#title-screen-starter-bucket')
+  ];
+  for (i = 0; i < bucketIDs.length; i++) {
+    var bucketID = bucketIDs[i];
+    dragContainers.push(document.querySelector(bucketID));
+
+    var left = parseInt((window.innerWidth - 225 - 50 * 2) * Math.random() + 25);
+    $(bucketID).css('margin-left', left + 'px');
+  }
+
+  var voidMap = {};
+
+  var drake = dragula(dragContainers, {
+    accepts: function (el, target) {
+      if (target.className === 'title-screen-bucket') {
+        return !voidMap[target.id];
+      }
+
+      return true;
+    },
+    revertOnSpill: true
   });
 
-  function doTitleScreen(callback) {
-    var $titleWordContainer = $('#title-screen-starter-bucket');
+  drake.on('drop', function(el, target, source) {
+    var $target = $(target);
+    var $source = $(source);
 
-    var titleWords = kt.shuffle('and rakes to spread the haul'.split(' '));
-    for (var i = 0; i < titleWords.length; i++) {
-      var word = titleWords[i];
-      var $wordDiv = $('<div class="title-screen-word">' + word + '</div>');
-      $titleWordContainer.append($wordDiv);
+    if ($target.hasClass('title-screen-bucket')) {
+      voidMap[target.id] = true;
+      $(target).addClass('filled');
     }
 
+    if ($source.hasClass('title-screen-bucket')) {
+      voidMap[source.id] = false;
+      $(source).removeClass('filled');
+    }
+
+    checkForValidState();
+  });
+
+  function checkForValidState() {
     var bucketIDs = [
       '#title-screen-bucket-1',
       '#title-screen-bucket-2',
@@ -27,77 +103,24 @@
       '#title-screen-bucket-5',
       '#title-screen-bucket-6'
     ];
+    var orderedWords = 'and rakes to spread the haul'.split(' ');
 
-    var dragContainers = [
-      document.querySelector('#title-screen-starter-bucket')
-    ];
-    for (i = 0; i < bucketIDs.length; i++) {
-      var bucketID = bucketIDs[i];
-      dragContainers.push(document.querySelector(bucketID));
+    for (var i = 0; i < bucketIDs.length; i++) {
+      var id = bucketIDs[i];
 
-      var left = parseInt((window.innerWidth - 225 - 50 * 2) * Math.random() + 25);
-      $(bucketID).css('margin-left', left + 'px');
+      var text = $(id + '> ' + '.title-screen-word').text().trim();
+      if (text !== orderedWords[i]) {
+        return;
+      }
     }
 
-    var voidMap = {};
-
-    var drake = dragula(dragContainers, {
-      accepts: function (el, target) {
-        if (target.className === 'title-screen-bucket') {
-          return !voidMap[target.id];
-        }
-
-        return true;
-      },
-      revertOnSpill: true
-    });
-
-    drake.on('drop', function(el, target, source) {
-      var $target = $(target);
-      var $source = $(source);
-
-      if ($target.hasClass('title-screen-bucket')) {
-        voidMap[target.id] = true;
-        $(target).addClass('filled');
-      }
-
-      if ($source.hasClass('title-screen-bucket')) {
-        voidMap[source.id] = false;
-        $(source).removeClass('filled');
-      }
-
-      checkForValidState();
-    });
-
-    function checkForValidState() {
-      var bucketIDs = [
-        '#title-screen-bucket-1',
-        '#title-screen-bucket-2',
-        '#title-screen-bucket-3',
-        '#title-screen-bucket-4',
-        '#title-screen-bucket-5',
-        '#title-screen-bucket-6'
-      ];
-      var orderedWords = 'and rakes to spread the haul'.split(' ');
-
-      for (var i = 0; i < bucketIDs.length; i++) {
-        var id = bucketIDs[i];
-
-        var text = $(id + '> ' + '.title-screen-word').text().trim();
-        if (text !== orderedWords[i]) {
-          return;
-        }
-      }
-
-      if (callback) {
-        callback();
-      }
+    if (callback) {
+      callback();
     }
   }
+}
 
-})();
-
-},{"dragula":3,"jquery":11,"kutility":12}],2:[function(require,module,exports){
+},{"dragula":4,"jquery":12,"kutility":13}],3:[function(require,module,exports){
 'use strict';
 
 var cache = {};
@@ -132,7 +155,7 @@ module.exports = {
   rm: rmClass
 };
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -236,6 +259,9 @@ function dragula (initialContainers, options) {
     eventualMovements();
     if (e.type === 'mousedown') {
       e.preventDefault(); // fixes https://github.com/bevacqua/dragula/issues/155
+      if (item.tagName === 'INPUT' || item.tagName === 'TEXTAREA') {
+        item.focus(); // fixes https://github.com/bevacqua/dragula/issues/176
+      }
     }
   }
 
@@ -416,7 +442,7 @@ function dragula (initialContainers, options) {
     } else if (_mirror) {
       sibling = _currentSibling;
     } else {
-      sibling = nextEl(_item || _copy);
+      sibling = nextEl(_copy || _item);
     }
     return target === _source && sibling === _initialSibling;
   }
@@ -617,9 +643,6 @@ function getScroll (scrollProp, offsetProp) {
 }
 
 function getElementBehindPoint (point, x, y) {
-  if (!x && !y) {
-    return null;
-  }
   var p = point || {};
   var state = p.className;
   var el;
@@ -679,7 +702,7 @@ function getRectHeight (rect) {
 module.exports = dragula;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./classes":2,"contra/emitter":5,"crossvent":9}],4:[function(require,module,exports){
+},{"./classes":3,"contra/emitter":6,"crossvent":10}],5:[function(require,module,exports){
 'use strict';
 
 var ticky = require('ticky');
@@ -691,7 +714,7 @@ module.exports = function debounce (fn, args, ctx) {
   });
 };
 
-},{"ticky":7}],5:[function(require,module,exports){
+},{"ticky":8}],6:[function(require,module,exports){
 'use strict';
 
 var atoa = require('atoa');
@@ -747,10 +770,10 @@ module.exports = function emitter (thing, options) {
   return thing;
 };
 
-},{"./debounce":4,"atoa":6}],6:[function(require,module,exports){
+},{"./debounce":5,"atoa":7}],7:[function(require,module,exports){
 module.exports = function atoa (a, n) { return Array.prototype.slice.call(a, n); }
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 var si = typeof setImmediate === 'function', tick;
 if (si) {
   tick = function (fn) { setImmediate(fn); };
@@ -759,7 +782,7 @@ if (si) {
 }
 
 module.exports = tick;
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 (function (global){
 
 var NativeCustomEvent = global.CustomEvent;
@@ -811,13 +834,16 @@ function CustomEvent (type, params) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 (function (global){
 'use strict';
 
 var customEvent = require('custom-event');
 var eventmap = require('./eventmap');
-var doc = document;
+var doc = global.document;
+if (!doc) {
+  return;
+}
 var addEvent = addEventEasy;
 var removeEvent = removeEventEasy;
 var hardCache = [];
@@ -840,7 +866,10 @@ function removeEventEasy (el, type, fn, capturing) {
 }
 
 function removeEventHard (el, type, fn) {
-  return el.detachEvent('on' + type, unwrap(el, type, fn));
+  var listener = unwrap(el, type, fn);
+  if (listener) {
+    return el.detachEvent('on' + type, listener);
+  }
 }
 
 function fabricateEvent (el, type, model) {
@@ -913,7 +942,7 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./eventmap":10,"custom-event":8}],10:[function(require,module,exports){
+},{"./eventmap":11,"custom-event":9}],11:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -930,7 +959,7 @@ for (eventname in global) {
 module.exports = eventmap;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.4
  * http://jquery.com/
@@ -10142,7 +10171,7 @@ return jQuery;
 
 }));
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 
 /* export something */
 module.exports = new Kutility();
