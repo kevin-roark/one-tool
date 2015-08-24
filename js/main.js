@@ -18,16 +18,25 @@
       $titleWordContainer.append($wordDiv);
     }
 
-    var dragContainers = [
-      document.querySelector('#title-screen-starter-bucket'),
-
-      document.querySelector('#title-screen-bucket-1'),
-      document.querySelector('#title-screen-bucket-2'),
-      document.querySelector('#title-screen-bucket-3'),
-      document.querySelector('#title-screen-bucket-4'),
-      document.querySelector('#title-screen-bucket-5'),
-      document.querySelector('#title-screen-bucket-6')
+    var bucketIDs = [
+      '#title-screen-bucket-1',
+      '#title-screen-bucket-2',
+      '#title-screen-bucket-3',
+      '#title-screen-bucket-4',
+      '#title-screen-bucket-5',
+      '#title-screen-bucket-6'
     ];
+
+    var dragContainers = [
+      document.querySelector('#title-screen-starter-bucket')
+    ];
+    for (i = 0; i < bucketIDs.length; i++) {
+      var bucketID = bucketIDs[i];
+      dragContainers.push(document.querySelector(bucketID));
+
+      var left = parseInt((window.innerWidth - 225 - 50 * 2) * Math.random() + 25);
+      $(bucketID).css('margin-left', left + 'px');
+    }
 
     var voidMap = {};
 
@@ -43,11 +52,17 @@
     });
 
     drake.on('drop', function(el, target, source) {
-      if (target.className === 'title-screen-bucket') {
+      var $target = $(target);
+      var $source = $(source);
+
+      if ($target.hasClass('title-screen-bucket')) {
         voidMap[target.id] = true;
+        $(target).addClass('filled');
       }
-      else if (source.className === 'title-screen-bucket') {
+
+      if ($source.hasClass('title-screen-bucket')) {
         voidMap[source.id] = false;
+        $(source).removeClass('filled');
       }
 
       checkForValidState();
@@ -55,22 +70,19 @@
 
     function checkForValidState() {
       var bucketIDs = [
-        'title-screen-bucket-1',
-        'title-screen-bucket-2',
-        'title-screen-bucket-3',
-        'title-screen-bucket-4',
-        'title-screen-bucket-5',
-        'title-screen-bucket-6'
+        '#title-screen-bucket-1',
+        '#title-screen-bucket-2',
+        '#title-screen-bucket-3',
+        '#title-screen-bucket-4',
+        '#title-screen-bucket-5',
+        '#title-screen-bucket-6'
       ];
       var orderedWords = 'and rakes to spread the haul'.split(' ');
 
       for (var i = 0; i < bucketIDs.length; i++) {
         var id = bucketIDs[i];
-        if (!voidMap[id]) {
-          return;
-        }
 
-        var text = $('#'+ id).text().trim();
+        var text = $(id + '> ' + '.title-screen-word').text().trim();
         if (text !== orderedWords[i]) {
           return;
         }
