@@ -1,0 +1,20 @@
+{
+  "name": "one-tool",
+  "version": "0.0.0",
+  "description": "One Man, One Tool, One Purpose. Task is the Driver of Man.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kevin-roark/one-tool.git"
+  },
+  "author": "kevin roark, JR.",
+  "bugs": {
+    "url": "https://github.com/kevin-roark/one-tool/issues"
+  },
+  "homepage": "https://github.com/kevin-roark/one-tool",
+  "dependencies": {
+    "dragula": "^3.0.3"
+  }
+}
