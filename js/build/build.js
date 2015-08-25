@@ -70,7 +70,7 @@ module.exports = function($elements, options) {
   var doTitleScreen = require('./title-screen');
   var drag = require('./drag');
 
-  var SKIP_TITLE = true;
+  var SKIP_TITLE = false;
 
   if (!SKIP_TITLE) {
     doTitleScreen(function() {
@@ -137,20 +137,22 @@ var $ = require('jquery');
 module.exports = function (callback) {
   var $titleWordContainer = $('#title-screen-starter-bucket');
 
-  var titleWords = kt.shuffle('and rakes to spread the haul'.split(' '));
-  for (var i = 0; i < titleWords.length; i++) {
-    var word = titleWords[i];
+  var orderedWords = 'and rakes to spread the haul'.split(' ');
+  var shuffledWords = kt.shuffle(orderedWords);
+
+  for (var i = 0; i < shuffledWords.length; i++) {
+    var word = shuffledWords[i];
     var $wordDiv = $('<div class="title-screen-word">' + word + '</div>');
     $titleWordContainer.append($wordDiv);
   }
 
   var bucketIDs = [
-    '#title-screen-bucket-1',
-    '#title-screen-bucket-2',
-    '#title-screen-bucket-3',
-    '#title-screen-bucket-4',
-    '#title-screen-bucket-5',
-    '#title-screen-bucket-6'
+    'title-screen-bucket-1',
+    'title-screen-bucket-2',
+    'title-screen-bucket-3',
+    'title-screen-bucket-4',
+    'title-screen-bucket-5',
+    'title-screen-bucket-6'
   ];
 
   var dragContainers = [
@@ -158,17 +160,17 @@ module.exports = function (callback) {
   ];
   for (i = 0; i < bucketIDs.length; i++) {
     var bucketID = bucketIDs[i];
-    dragContainers.push(document.querySelector(bucketID));
+    dragContainers.push(document.querySelector('#' + bucketID));
 
     var left = parseInt((window.innerWidth - 225 - 50 * 2) * Math.random() + 25);
-    $(bucketID).css('margin-left', left + 'px');
+    $('#' + bucketID).css('margin-left', left + 'px');
   }
 
   var voidMap = {};
 
   var drake = dragula(dragContainers, {
     accepts: function (el, target) {
-      if (target.className === 'title-screen-bucket') {
+      if ($(target).hasClass('title-screen-bucket')) {
         return !voidMap[target.id];
       }
 
@@ -184,32 +186,25 @@ module.exports = function (callback) {
     if ($target.hasClass('title-screen-bucket')) {
       voidMap[target.id] = true;
       $(target).addClass('filled');
+
+      if (textForBucketWithIDIsValid(target.id)) {
+        $(target).addClass('correct');
+      }
     }
 
     if ($source.hasClass('title-screen-bucket')) {
       voidMap[source.id] = false;
       $(source).removeClass('filled');
+      $(source).removeClass('correct');
     }
 
     checkForValidState();
   });
 
   function checkForValidState() {
-    var bucketIDs = [
-      '#title-screen-bucket-1',
-      '#title-screen-bucket-2',
-      '#title-screen-bucket-3',
-      '#title-screen-bucket-4',
-      '#title-screen-bucket-5',
-      '#title-screen-bucket-6'
-    ];
-    var orderedWords = 'and rakes to spread the haul'.split(' ');
-
     for (var i = 0; i < bucketIDs.length; i++) {
       var id = bucketIDs[i];
-
-      var text = $(id + '> ' + '.title-screen-word').text().trim();
-      if (text !== orderedWords[i]) {
+      if (!textForBucketWithIDIsValid(id)) {
         return;
       }
     }
@@ -218,7 +213,13 @@ module.exports = function (callback) {
       callback();
     }
   }
-}
+
+  function textForBucketWithIDIsValid(id) {
+    var idx = bucketIDs.indexOf(id);
+    var text = $('#' + id + ' > ' + '.title-screen-word').text().trim();
+    return text === orderedWords[idx];
+  }
+};
 
 },{"dragula":5,"jquery":13,"kutility":14}],4:[function(require,module,exports){
 'use strict';

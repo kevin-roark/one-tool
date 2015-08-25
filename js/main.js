@@ -4,7 +4,7 @@
   var doTitleScreen = require('./title-screen');
   var drag = require('./drag');
 
-  var SKIP_TITLE = true;
+  var SKIP_TITLE = false;
 
   if (!SKIP_TITLE) {
     doTitleScreen(function() {
