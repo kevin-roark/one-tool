@@ -1,8 +1,48 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 
+var $ = require('jquery');
+
+module.exports = function($elements) {
+  var trackingState = {
+    $activeElement: null,
+    lastMousePosition: {},
+    offsetFromMouse: {},
+    z: 0
+  };
+
+  $elements.mousedown(function(ev) {
+    trackingState.$activeElement = $(this);
+
+    trackingState.$activeElement.css('z-index', ++trackingState.z);
+
+    var thisOffset = trackingState.$activeElement.offset();
+    trackingState.offsetFromMouse.x = thisOffset.left - ev.pageX;
+    trackingState.offsetFromMouse.y = thisOffset.top - ev.pageY;
+  });
+  $elements.mouseup(function() {
+    trackingState.$activeElement = null;
+  });
+
+  $(document).mousemove(function(ev) {
+    if (trackingState.$activeElement) {
+      var left = ev.pageX + trackingState.offsetFromMouse.x;
+      trackingState.$activeElement.css('left', left + 'px');
+
+      var top = ev.pageY + trackingState.offsetFromMouse.y;
+      trackingState.$activeElement.css('top', top + 'px');
+    }
+
+    trackingState.lastMousePosition.x = ev.pageX;
+    trackingState.lastMousePosition.y = ev.pageY;
+  });
+};
+
+},{"jquery":13}],2:[function(require,module,exports){
+
 (function() {
   var $ = require('jquery');
   var doTitleScreen = require('./title-screen');
+  var drag = require('./drag');
 
   var SKIP_TITLE = true;
 
@@ -20,42 +60,20 @@
     $('#title-screen').fadeOut(1000);
 
     var $rake = $('#rake');
+    followCursor($rake);
 
     var $poems = $('.poem');
+
     arrangeCards($poems, $('#poems'));
 
-    var $activePoem;
-    $poems.mousedown(function() {
-      $activePoem = $(this);
-    });
-    $poems.mouseup(function() {
-      $activePoem = null;
-    });
-
-    var mouseState = {};
-    $(document).mousemove(function(ev) {
-      followCursor($rake, ev);
-
-      if ($activePoem) {
-        var offset = $activePoem.offset();
-
-        var dx = ev.pageX - mouseState.x;
-        var left = parseInt(offset.left + dx);
-        console.log(left);
-        $activePoem.css('left', left + 'px');
-
-        var dy = ev.pageY - mouseState.y;
-        var top = offset.top - dy;
-        $activePoem.css('top', top + 'px');
-      }
-
-      mouseState.x = ev.pageX; mouseState.y = ev.pageY;
-    });
+    drag($poems);
   }
 
-  function followCursor($el, ev) {
-    $el.css('left', (ev.pageX - $el.width() / 2) + 'px');
-    $el.css('top', (ev.pageY - $el.height() / 2) + 'px');
+  function followCursor($el) {
+    $(document).mousemove(function(ev) {
+      $el.css('left', (ev.pageX - $el.width() / 2) + 'px');
+      $el.css('top', (ev.pageY - $el.height() / 2) + 'px');
+    });
   }
 
   function arrangeCards($cards, $container) {
@@ -74,7 +92,7 @@
 
 })();
 
-},{"./title-screen":2,"jquery":12}],2:[function(require,module,exports){
+},{"./drag":1,"./title-screen":3,"jquery":13}],3:[function(require,module,exports){
 
 var dragula = require('dragula');
 var kt = require('kutility');
@@ -166,7 +184,7 @@ module.exports = function (callback) {
   }
 }
 
-},{"dragula":4,"jquery":12,"kutility":13}],3:[function(require,module,exports){
+},{"dragula":5,"jquery":13,"kutility":14}],4:[function(require,module,exports){
 'use strict';
 
 var cache = {};
@@ -201,7 +219,7 @@ module.exports = {
   rm: rmClass
 };
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -748,7 +766,7 @@ function getRectHeight (rect) {
 module.exports = dragula;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./classes":3,"contra/emitter":6,"crossvent":10}],5:[function(require,module,exports){
+},{"./classes":4,"contra/emitter":7,"crossvent":11}],6:[function(require,module,exports){
 'use strict';
 
 var ticky = require('ticky');
@@ -760,7 +778,7 @@ module.exports = function debounce (fn, args, ctx) {
   });
 };
 
-},{"ticky":8}],6:[function(require,module,exports){
+},{"ticky":9}],7:[function(require,module,exports){
 'use strict';
 
 var atoa = require('atoa');
@@ -816,10 +834,10 @@ module.exports = function emitter (thing, options) {
   return thing;
 };
 
-},{"./debounce":5,"atoa":7}],7:[function(require,module,exports){
+},{"./debounce":6,"atoa":8}],8:[function(require,module,exports){
 module.exports = function atoa (a, n) { return Array.prototype.slice.call(a, n); }
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var si = typeof setImmediate === 'function', tick;
 if (si) {
   tick = function (fn) { setImmediate(fn); };
@@ -828,7 +846,7 @@ if (si) {
 }
 
 module.exports = tick;
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 (function (global){
 
 var NativeCustomEvent = global.CustomEvent;
@@ -880,7 +898,7 @@ function CustomEvent (type, params) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -982,7 +1000,7 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./eventmap":11,"custom-event":9}],11:[function(require,module,exports){
+},{"./eventmap":12,"custom-event":10}],12:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -999,7 +1017,7 @@ for (eventname in global) {
 module.exports = eventmap;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 /*!
  * jQuery JavaScript Library v2.1.4
  * http://jquery.com/
@@ -10211,7 +10229,7 @@ return jQuery;
 
 }));
 
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 
 /* export something */
 module.exports = new Kutility();
@@ -10785,4 +10803,4 @@ Kutility.prototype.blur = function(el, x) {
   this.setFilter(el, cf + f);
 };
 
-},{}]},{},[1]);
+},{}]},{},[2]);

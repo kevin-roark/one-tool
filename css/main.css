@@ -95,9 +95,9 @@ html, body {
 
   background-color: #f4f4f4;
 
-  -webkit-transition: all 250ms;
-  -moz-transition: all 250ms;
-  transition: all 250ms;
+  -webkit-transition: transform 250ms, background-color 350ms;
+  -moz-transition: transform 250ms, background-color 350ms;
+  transition: transform 250ms, background-color 350ms;
 
   box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
 
