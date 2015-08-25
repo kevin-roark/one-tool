@@ -2,16 +2,21 @@
 
 var $ = require('jquery');
 
-module.exports = function($elements) {
+module.exports = function($elements, options) {
+  if (!options) options = {};
+
   var trackingState = {
     $activeElement: null,
     lastMousePosition: {},
     offsetFromMouse: {},
-    z: 0
+    z: 0,
+    $hoverElement: null,
+    hoverElementNaturalZ: 0
   };
 
   $elements.mousedown(function(ev) {
     trackingState.$activeElement = $(this);
+    trackingState.$hoverElement = null;
 
     trackingState.$activeElement.css('z-index', ++trackingState.z);
 
@@ -19,9 +24,30 @@ module.exports = function($elements) {
     trackingState.offsetFromMouse.x = thisOffset.left - ev.pageX;
     trackingState.offsetFromMouse.y = thisOffset.top - ev.pageY;
   });
+
   $elements.mouseup(function() {
     trackingState.$activeElement = null;
   });
+
+  if (options.riseOnHover) {
+    $elements.hover(
+      function() {
+        var $this = $(this);
+        var z = $this.css('z-index');
+
+        $this.css('z-index', trackingState.z + 1);
+
+        trackingState.$hoverElement = $this;
+        trackingState.hoverElementNaturalZ = z;
+      },
+      function() {
+        if (trackingState.$hoverElement) {
+          trackingState.$hoverElement.css('z-index', trackingState.hoverElementNaturalZ);
+          trackingState.$hoverElement = null;
+        }
+      }
+    );
+  }
 
   $(document).mousemove(function(ev) {
     if (trackingState.$activeElement) {
@@ -65,6 +91,7 @@ module.exports = function($elements) {
     var $poems = $('.poem');
 
     arrangeCards($poems, $('#poems'));
+    numberCards($poems, 'poem-number');
 
     drag($poems);
   }
@@ -82,11 +109,20 @@ module.exports = function($elements) {
 
       $card.css('position', 'absolute');
 
-      var left = parseInt(Math.random() * ($container.width() - $card.width()));
+      var left = parseInt(Math.random() * ($container.width() - $card.width() - 25));
       $card.css('left', left);
 
-      var top = parseInt(Math.random() * ($container.height() - $card.height()));
+      var top = parseInt(Math.random() * ($container.height() - $card.height() - 25));
       $card.css('top', top);
+    }
+  }
+
+  function numberCards($cards, className) {
+    for (var i = 0; i < $cards.length; i++) {
+      var $card = $($cards[i]);
+
+      var $number = $('<div class="' + className + '">' + (i + 1) + '</div>');
+      $card.append($number);
     }
   }
 
