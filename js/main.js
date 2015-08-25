@@ -20,8 +20,8 @@
 
     var $rake = $('#rake');
     $(document).mousemove(function(ev) {
-      $rake.css('left', ev.pageX + 'px');
-      $rake.css('top', ev.pageY + 'px');
+      $rake.css('left', (ev.pageX - $rake.width() / 2) + 'px');
+      $rake.css('top', (ev.pageY - $rake.height() / 2) + 'px');
     });
   }
 

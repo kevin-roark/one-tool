@@ -21,8 +21,8 @@
 
     var $rake = $('#rake');
     $(document).mousemove(function(ev) {
-      $rake.css('left', ev.pageX + 'px');
-      $rake.css('top', ev.pageY + 'px');
+      $rake.css('left', (ev.pageX - $rake.width() / 2) + 'px');
+      $rake.css('top', (ev.pageY - $rake.height() / 2) + 'px');
     });
   }
 
@@ -259,9 +259,6 @@ function dragula (initialContainers, options) {
     eventualMovements();
     if (e.type === 'mousedown') {
       e.preventDefault(); // fixes https://github.com/bevacqua/dragula/issues/155
-      if (item.tagName === 'INPUT' || item.tagName === 'TEXTAREA') {
-        item.focus(); // fixes https://github.com/bevacqua/dragula/issues/176
-      }
     }
   }
 
@@ -442,7 +439,7 @@ function dragula (initialContainers, options) {
     } else if (_mirror) {
       sibling = _currentSibling;
     } else {
-      sibling = nextEl(_copy || _item);
+      sibling = nextEl(_item || _copy);
     }
     return target === _source && sibling === _initialSibling;
   }
@@ -643,6 +640,9 @@ function getScroll (scrollProp, offsetProp) {
 }
 
 function getElementBehindPoint (point, x, y) {
+  if (!x && !y) {
+    return null;
+  }
   var p = point || {};
   var state = p.className;
   var el;
@@ -840,10 +840,7 @@ function CustomEvent (type, params) {
 
 var customEvent = require('custom-event');
 var eventmap = require('./eventmap');
-var doc = global.document;
-if (!doc) {
-  return;
-}
+var doc = document;
 var addEvent = addEventEasy;
 var removeEvent = removeEventEasy;
 var hardCache = [];
@@ -866,10 +863,7 @@ function removeEventEasy (el, type, fn, capturing) {
 }
 
 function removeEventHard (el, type, fn) {
-  var listener = unwrap(el, type, fn);
-  if (listener) {
-    return el.detachEvent('on' + type, listener);
-  }
+  return el.detachEvent('on' + type, unwrap(el, type, fn));
 }
 
 function fabricateEvent (el, type, model) {
