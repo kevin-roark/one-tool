@@ -25,6 +25,7 @@
     var $poems = $('.poem');
 
     arrangeCards($poems, $('#poems'));
+    numberCards($poems, 'poem-number');
 
     drag($poems);
   }
@@ -42,11 +43,20 @@
 
       $card.css('position', 'absolute');
 
-      var left = parseInt(Math.random() * ($container.width() - $card.width()));
+      var left = parseInt(Math.random() * ($container.width() - $card.width() - 25));
       $card.css('left', left);
 
-      var top = parseInt(Math.random() * ($container.height() - $card.height()));
+      var top = parseInt(Math.random() * ($container.height() - $card.height() - 25));
       $card.css('top', top);
+    }
+  }
+
+  function numberCards($cards, className) {
+    for (var i = 0; i < $cards.length; i++) {
+      var $card = $($cards[i]);
+
+      var $number = $('<div class="' + className + '">' + (i + 1) + '</div>');
+      $card.append($number);
     }
   }
 
