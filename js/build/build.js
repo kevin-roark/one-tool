@@ -845,8 +845,46 @@ module.exports = function($elements, options) {
       webAudioApi: true,
       volume: 100
     });
+    var rakeSound = new buzz.sound('/media/scrape', {
+      formats: [ "ogg", "mp3"],
+      webAudioApi: true,
+      volume: 1,
+      loop: true
+    });
+
+    var soundMouseState = {
+      isDragging: false
+    };
     $poems.mousedown(function() {
       mouseSound.play();
+      rakeSound.play();
+      soundMouseState.isDragging = true;
+    });
+    $poems.mouseup(function() {
+      rakeSound.pause();
+      soundMouseState.isDragging = false;
+    });
+    $(document).mousemove(function(ev) {
+      if (soundMouseState.isDragging) {
+        var now = new Date();
+        var x = ev.pageX;
+        var y = ev.pageY;
+
+        if (soundMouseState.lastMoveTime) {
+          var td = now - soundMouseState.lastMoveTime; // ms
+          var xd = x - soundMouseState.lastMouseX;
+          var yd = y - soundMouseState.lastMouseY;
+          var vel = (Math.abs(xd) + Math.abs(yd)) / td;
+
+          var maxExpectedVel = 12;
+          var volume = Math.max(1, Math.min(100, vel / maxExpectedVel * 100));
+          rakeSound.setVolume(parseInt(volume));
+        }
+
+        soundMouseState.lastMouseX = x;
+        soundMouseState.lastMouseY = y;
+        soundMouseState.lastMoveTime = now;
+      }
     });
   }
 
@@ -887,6 +925,7 @@ module.exports = function($elements, options) {
 var dragula = require('dragula');
 var kt = require('kutility');
 var $ = require('jquery');
+var buzz = require('./lib/buzz.js');
 
 module.exports = function (callback) {
   var $starterBucketContainer = $('#title-screen-starter-bucket-container');
@@ -945,6 +984,12 @@ module.exports = function (callback) {
     revertOnSpill: true
   });
 
+  var chaChing = new buzz.sound('/media/money', {
+    formats: [ "ogg", "mp3"],
+    webAudioApi: true,
+    volume: 75
+  });
+
   drake.on('drop', function(el, target, source) {
     voidMap[target.id] = true;
     voidMap[source.id] = false;
@@ -960,6 +1005,8 @@ module.exports = function (callback) {
 
       if (textForBucketWithIDIsValid(target.id)) {
         $target.addClass('correct');
+        chaChing.setTime(0);
+        chaChing.play();
       }
     }
 
@@ -991,7 +1038,7 @@ module.exports = function (callback) {
   }
 };
 
-},{"dragula":6,"jquery":14,"kutility":15}],5:[function(require,module,exports){
+},{"./lib/buzz.js":2,"dragula":6,"jquery":14,"kutility":15}],5:[function(require,module,exports){
 'use strict';
 
 var cache = {};
