@@ -98,6 +98,7 @@ module.exports = function($elements, options) {
     $('#title-screen').fadeOut(1000);
 
     var $rake = $('#rake');
+    $rake.show();
     followCursor($rake);
 
     var $poems = $('.poem');
