@@ -35,8 +35,46 @@
       webAudioApi: true,
       volume: 100
     });
+    var rakeSound = new buzz.sound('/media/scrape', {
+      formats: [ "ogg", "mp3"],
+      webAudioApi: true,
+      volume: 1,
+      loop: true
+    });
+
+    var soundMouseState = {
+      isDragging: false
+    };
     $poems.mousedown(function() {
       mouseSound.play();
+      rakeSound.play();
+      soundMouseState.isDragging = true;
+    });
+    $poems.mouseup(function() {
+      rakeSound.pause();
+      soundMouseState.isDragging = false;
+    });
+    $(document).mousemove(function(ev) {
+      if (soundMouseState.isDragging) {
+        var now = new Date();
+        var x = ev.pageX;
+        var y = ev.pageY;
+
+        if (soundMouseState.lastMoveTime) {
+          var td = now - soundMouseState.lastMoveTime; // ms
+          var xd = x - soundMouseState.lastMouseX;
+          var yd = y - soundMouseState.lastMouseY;
+          var vel = (Math.abs(xd) + Math.abs(yd)) / td;
+
+          var maxExpectedVel = 12;
+          var volume = Math.max(1, Math.min(100, vel / maxExpectedVel * 100));
+          rakeSound.setVolume(parseInt(volume));
+        }
+
+        soundMouseState.lastMouseX = x;
+        soundMouseState.lastMouseY = y;
+        soundMouseState.lastMoveTime = now;
+      }
     });
   }
 
