@@ -21,6 +21,7 @@ module.exports = function($elements, options) {
     trackingState.$hoverElement = null;
 
     trackingState.$activeElement.css('z-index', ++trackingState.z);
+    trackingState.$activeElement.addClass('dragging');
 
     var thisOffset = trackingState.$activeElement.offset();
     trackingState.offsetFromMouse.x = thisOffset.left - ev.pageX;
@@ -28,6 +29,7 @@ module.exports = function($elements, options) {
   });
 
   $elements.mouseup(function() {
+    trackingState.$activeElement.removeClass('dragging');
     trackingState.$activeElement = null;
   });
 

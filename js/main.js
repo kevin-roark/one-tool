@@ -8,7 +8,6 @@
 
   if (!SKIP_TITLE) {
     doTitleScreen(function() {
-      console.log('unlocked the key!!');
       startRaking();
     });
   }
