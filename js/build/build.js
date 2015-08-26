@@ -135,15 +135,24 @@ var kt = require('kutility');
 var $ = require('jquery');
 
 module.exports = function (callback) {
-  var $titleWordContainer = $('#title-screen-starter-bucket');
+  var $starterBucketContainer = $('#title-screen-starter-bucket-container');
 
-  var orderedWords = 'and rakes to spread the haul'.split(' ');
+  var orderedWords = 'And Rakes To Spread The Haul'.split(' ');
   var shuffledWords = kt.shuffle(orderedWords);
+
+  var starterBucketIDs = [];
 
   for (var i = 0; i < shuffledWords.length; i++) {
     var word = shuffledWords[i];
-    var $wordDiv = $('<div class="title-screen-word">' + word + '</div>');
-    $titleWordContainer.append($wordDiv);
+    var $wordEl = $('<span class="title-screen-word">' + word + '</span>');
+
+    var id = 'starter-bucket-' + (i+1);
+    starterBucketIDs.push(id);
+
+    var $containerDiv = $('<div class="title-screen-word-starter-bucket" id="' + id + '"></div>');
+    $containerDiv.append($wordEl);
+
+    $starterBucketContainer.append($containerDiv);
   }
 
   var bucketIDs = [
@@ -155,47 +164,54 @@ module.exports = function (callback) {
     'title-screen-bucket-6'
   ];
 
-  var dragContainers = [
-    document.querySelector('#title-screen-starter-bucket')
-  ];
+  var voidMap = {};
+  var dragContainers = [];
+
+  for (i = 0; i < starterBucketIDs.length; i++) {
+    var starterBucketID = starterBucketIDs[i];
+    dragContainers.push(document.querySelector('#' + starterBucketID));
+    voidMap[starterBucketID] = true;
+  }
+
   for (i = 0; i < bucketIDs.length; i++) {
     var bucketID = bucketIDs[i];
     dragContainers.push(document.querySelector('#' + bucketID));
 
-    var left = parseInt((window.innerWidth - 225 - 50 * 2) * Math.random() + 25);
+    var minLeft = 160;
+    var left = parseInt((window.innerWidth - 225 - minLeft - 50) * Math.random()) + minLeft;
     $('#' + bucketID).css('margin-left', left + 'px');
-  }
 
-  var voidMap = {};
+    voidMap[bucketID] = false;
+  }
 
   var drake = dragula(dragContainers, {
     accepts: function (el, target) {
-      if ($(target).hasClass('title-screen-bucket')) {
-        return !voidMap[target.id];
-      }
-
-      return true;
+      return !voidMap[target.id];
     },
     revertOnSpill: true
   });
 
   drake.on('drop', function(el, target, source) {
+    voidMap[target.id] = true;
+    voidMap[source.id] = false;
+
     var $target = $(target);
     var $source = $(source);
 
+    $source.addClass('void');
+    $target.removeClass('void');
+
     if ($target.hasClass('title-screen-bucket')) {
-      voidMap[target.id] = true;
-      $(target).addClass('filled');
+      $target.addClass('filled');
 
       if (textForBucketWithIDIsValid(target.id)) {
-        $(target).addClass('correct');
+        $target.addClass('correct');
       }
     }
 
     if ($source.hasClass('title-screen-bucket')) {
-      voidMap[source.id] = false;
-      $(source).removeClass('filled');
-      $(source).removeClass('correct');
+      $source.removeClass('filled');
+      $source.removeClass('correct');
     }
 
     checkForValidState();
