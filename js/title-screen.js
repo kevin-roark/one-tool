@@ -46,7 +46,7 @@ module.exports = function (callback) {
     var bucketID = bucketIDs[i];
     dragContainers.push(document.querySelector('#' + bucketID));
 
-    var minLeft = 160;
+    var minLeft = 175;
     var left = parseInt((window.innerWidth - 225 - minLeft - 50) * Math.random()) + minLeft;
     $('#' + bucketID).css('margin-left', left + 'px');
 
