@@ -1,6 +1,7 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 
 var $ = require('jquery');
+var kt = require('kutility');
 
 module.exports = function($elements, options) {
   if (!options) options = {};
@@ -14,11 +15,14 @@ module.exports = function($elements, options) {
     hoverElementNaturalZ: 0
   };
 
+  zShuffle($elements);
+
   $elements.mousedown(function(ev) {
     trackingState.$activeElement = $(this);
     trackingState.$hoverElement = null;
 
     trackingState.$activeElement.css('z-index', ++trackingState.z);
+    trackingState.$activeElement.addClass('dragging');
 
     var thisOffset = trackingState.$activeElement.offset();
     trackingState.offsetFromMouse.x = thisOffset.left - ev.pageX;
@@ -26,6 +30,7 @@ module.exports = function($elements, options) {
   });
 
   $elements.mouseup(function() {
+    trackingState.$activeElement.removeClass('dragging');
     trackingState.$activeElement = null;
   });
 
@@ -61,9 +66,17 @@ module.exports = function($elements, options) {
     trackingState.lastMousePosition.x = ev.pageX;
     trackingState.lastMousePosition.y = ev.pageY;
   });
+
+  function zShuffle() {
+    var $shuffledElements = kt.shuffle($elements);
+    for (var i = 0; i < $shuffledElements.length; i++) {
+      var $el = $($shuffledElements[i]);
+      $el.css('z-index', ++trackingState.z);
+    }
+  }
 };
 
-},{"jquery":13}],2:[function(require,module,exports){
+},{"jquery":13,"kutility":14}],2:[function(require,module,exports){
 
 (function() {
   var $ = require('jquery');
@@ -74,7 +87,6 @@ module.exports = function($elements, options) {
 
   if (!SKIP_TITLE) {
     doTitleScreen(function() {
-      console.log('unlocked the key!!');
       startRaking();
     });
   }
@@ -177,7 +189,7 @@ module.exports = function (callback) {
     var bucketID = bucketIDs[i];
     dragContainers.push(document.querySelector('#' + bucketID));
 
-    var minLeft = 160;
+    var minLeft = 175;
     var left = parseInt((window.innerWidth - 225 - minLeft - 50) * Math.random()) + minLeft;
     $('#' + bucketID).css('margin-left', left + 'px');
 
