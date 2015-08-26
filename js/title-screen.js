@@ -2,6 +2,7 @@
 var dragula = require('dragula');
 var kt = require('kutility');
 var $ = require('jquery');
+var buzz = require('./lib/buzz.js');
 
 module.exports = function (callback) {
   var $starterBucketContainer = $('#title-screen-starter-bucket-container');
@@ -60,6 +61,12 @@ module.exports = function (callback) {
     revertOnSpill: true
   });
 
+  var chaChing = new buzz.sound('/media/money', {
+    formats: [ "ogg", "mp3"],
+    webAudioApi: true,
+    volume: 75
+  });
+
   drake.on('drop', function(el, target, source) {
     voidMap[target.id] = true;
     voidMap[source.id] = false;
@@ -75,6 +82,8 @@ module.exports = function (callback) {
 
       if (textForBucketWithIDIsValid(target.id)) {
         $target.addClass('correct');
+        chaChing.setTime(0);
+        chaChing.play();
       }
     }
 
