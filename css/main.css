@@ -124,14 +124,19 @@ html, body {
   width: 100%; height: 100%; left: 0; top: 0;
 
   padding: 20px;
-
-  cursor: url('/media/rake_cursor.png'), auto;
 }
 
 #rake {
-  display: none;
   position: absolute;
   width: 333px;
+
+  z-index: 1000000000;
+  pointer-events: none;
+
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 #poems {
@@ -144,6 +149,8 @@ html, body {
   padding: 10px;
   margin: 10px;
   max-width: 400px;
+
+  cursor: move;
 
   background-color: #f4f4f4;
 
@@ -178,7 +185,7 @@ html, body {
 
 .poem-body {
   white-space: pre-line;
-  margin-left: 8px;
+  margin: -6px 8px 8px 8px;
 
   font-size: 12px;
   line-height: 18px;
