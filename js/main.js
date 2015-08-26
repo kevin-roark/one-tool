@@ -1,6 +1,7 @@
 
 (function() {
   var $ = require('jquery');
+  var buzz = require('./lib/buzz.js');
   var doTitleScreen = require('./title-screen');
   var drag = require('./drag');
 
@@ -28,6 +29,15 @@
     numberCards($poems, 'poem-number');
 
     drag($poems);
+
+    var mouseSound = new buzz.sound('/media/click', {
+      formats: [ "ogg", "mp3"],
+      webAudioApi: true,
+      volume: 100
+    });
+    $poems.mousedown(function() {
+      mouseSound.play();
+    });
   }
 
   function followCursor($el) {
