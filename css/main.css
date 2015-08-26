@@ -127,6 +127,7 @@ html, body {
 }
 
 #rake {
+  display: none;
   position: absolute;
   width: 333px;
 
