@@ -1,5 +1,6 @@
 
 var $ = require('jquery');
+var kt = require('kutility');
 
 module.exports = function($elements, options) {
   if (!options) options = {};
@@ -12,6 +13,8 @@ module.exports = function($elements, options) {
     $hoverElement: null,
     hoverElementNaturalZ: 0
   };
+
+  zShuffle($elements);
 
   $elements.mousedown(function(ev) {
     trackingState.$activeElement = $(this);
@@ -60,4 +63,12 @@ module.exports = function($elements, options) {
     trackingState.lastMousePosition.x = ev.pageX;
     trackingState.lastMousePosition.y = ev.pageY;
   });
+
+  function zShuffle() {
+    var $shuffledElements = kt.shuffle($elements);
+    for (var i = 0; i < $shuffledElements.length; i++) {
+      var $el = $($shuffledElements[i]);
+      $el.css('z-index', ++trackingState.z);
+    }
+  }
 };
