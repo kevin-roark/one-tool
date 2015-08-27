@@ -5,7 +5,8 @@
   var doTitleScreen = require('./title-screen');
   var drag = require('./drag');
 
-  var SKIP_TITLE = false;
+  var isPhone = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+  var SKIP_TITLE = isPhone;
 
   if (!SKIP_TITLE) {
     doTitleScreen(function() {
