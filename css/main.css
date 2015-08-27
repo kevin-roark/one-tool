@@ -1,6 +1,11 @@
 
 html, body {
   box-sizing: border-box;
+
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 /** TITLE SCREEN */
@@ -219,4 +224,22 @@ html, body {
 
   font-size: 11px;
   color: rgba(0, 0, 0, 0.26);
+}
+
+/** ERRORS */
+
+.mobile-error {
+  display: none;
+
+  position: fixed;
+  z-index: 10000;
+  text-align: center;
+  width: 100%;
+  padding: 60px 0px;
+  background-color: rgba(255, 60, 60, 1);
+  color: rgba(255, 255, 255, 0.87);
+  font-size: 24px;
+  font-weight: 700;
+  font-family: 'Vollkorn', serif;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }

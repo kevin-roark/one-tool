@@ -816,6 +816,15 @@ module.exports = function($elements, options) {
   var drag = require('./drag');
 
   var isPhone = (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+
+  if (isPhone) {
+    var $mobileError = $('.mobile-error');
+    $mobileError.show();
+    setTimeout(function() {
+      $mobileError.fadeOut(5555);
+    }, 3333);
+  }
+
   var SKIP_TITLE = isPhone;
 
   if (!SKIP_TITLE) {
