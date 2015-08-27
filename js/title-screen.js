@@ -5,6 +5,8 @@ var $ = require('jquery');
 var buzz = require('./lib/buzz.js');
 
 module.exports = function (callback) {
+  var hasSolvedPuzzle = false;
+
   var $starterBucketContainer = $('#title-screen-starter-bucket-container');
 
   var orderedWords = 'And Rakes To Spread The Haul'.split(' ');
@@ -95,6 +97,27 @@ module.exports = function (callback) {
     checkForValidState();
   });
 
+  // add hints after thirty seconds
+  setTimeout(function() {
+    if (hasSolvedPuzzle) {
+      return;
+    }
+
+    for (var i = 0; i < orderedWords.length; i++) {
+      var word = orderedWords[i];
+      var $hintEl = $('<span class="title-screen-word-hint">' + word + '</span>');
+
+      var $bucket = $('#' + bucketIDs[i]);
+      $bucket.append($hintEl);
+
+      $hintEl.fadeIn(1000);
+    }
+
+    var $additionalInstructions = $('<span style="display: none"> Make it say "And Rakes To Spread The Haul."</span>');
+    $('#title-screen-instructions').append($additionalInstructions);
+    $additionalInstructions.fadeIn(1000);
+  }, 30 * 1000);
+
   function checkForValidState() {
     for (var i = 0; i < bucketIDs.length; i++) {
       var id = bucketIDs[i];
@@ -103,9 +126,11 @@ module.exports = function (callback) {
       }
     }
 
-    if (callback) {
+    if (callback && !hasSolvedPuzzle) {
       callback();
     }
+
+    hasSolvedPuzzle = true;
   }
 
   function textForBucketWithIDIsValid(id) {
