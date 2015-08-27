@@ -113,7 +113,7 @@ module.exports = function (callback) {
       $hintEl.fadeIn(1000);
     }
 
-    var $additionalInstructions = $('<span style="display: none"> Make it say "And Rakes To Spread The Haul."</span>');
+    var $additionalInstructions = $('<span style="display: none; text-decoration: underline;"> Make it say "And Rakes To Spread The Haul."</span>');
     $('#title-screen-instructions').append($additionalInstructions);
     $additionalInstructions.fadeIn(1000);
   }, 30 * 1000);
