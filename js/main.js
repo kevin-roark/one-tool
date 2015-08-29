@@ -29,6 +29,8 @@
   function startRaking() {
     $('#title-screen').fadeOut(1000);
 
+    $('#work-title').text('And Rakes To Spread The Haul');
+
     var $rake = $('#rake');
     $rake.show();
     followCursor($rake);

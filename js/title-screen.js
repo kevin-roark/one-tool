@@ -116,6 +116,8 @@ module.exports = function (callback) {
     var $additionalInstructions = $('<span style="display: none; text-decoration: underline;"> Make it say "And Rakes To Spread The Haul."</span>');
     $('#title-screen-instructions').append($additionalInstructions);
     $additionalInstructions.fadeIn(1000);
+
+    $('#work-title').text('And Rakes To Spread The Haul');
   }, 30 * 1000);
 
   function checkForValidState() {

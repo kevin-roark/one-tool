@@ -226,7 +226,7 @@ html, body {
   color: rgba(0, 0, 0, 0.26);
 }
 
-/** ERRORS */
+/** ELSE */
 
 .mobile-error {
   display: none;
@@ -243,3 +243,23 @@ html, body {
   font-family: 'Vollkorn', serif;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
+
+.creator-info {
+  position: fixed;
+  bottom: 20px; right: 20px;
+  z-index: 10000;
+
+  padding: 5px;
+
+  font-family: 'Vollkorn', serif;
+
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+  .creator-info a {
+    color: rgb(0, 246, 144);
+    text-decoration: none;
+  }
+    .creator-info a:hover {
+      text-decoration: underline;
+    }
