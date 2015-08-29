@@ -263,3 +263,6 @@ html, body {
     .creator-info a:hover {
       text-decoration: underline;
     }
+  .physical-info {
+    font-size: 11px;
+  }
